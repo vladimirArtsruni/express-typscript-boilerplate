@@ -47,16 +47,8 @@ export class KoaServer implements Driver<Koa> {
         if (this.httpServer) this.httpServer.close();
     }
 
-    /**
-     * @param server
-     * @private
-     */
-    private static setupStandardMiddlewares(server: Koa) {
-        server.use(bodyParser());
-    }
-
-    setupStandardMiddlewares(): void {
-
+    setupStandardMiddlewares(server: Koa): void {
+        server.use(bodyParser())
     }
 
 }
