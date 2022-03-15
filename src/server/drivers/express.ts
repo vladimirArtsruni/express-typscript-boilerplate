@@ -6,11 +6,6 @@ import * as bodyParser from 'body-parser';
 import { useExpressServer } from 'routing-controllers';
 import { Driver } from './driver'
 
-/**
- * Abstraction around the raw Express.js server and Nodes' HTTP server.
- * Defines HTTP request mappings, basic as well as request-mapping-specific
- * middleware chains for application logic, config and everything else.
- */
 export class ExpressServer implements Driver<Express> {
 
     private server?: Express;

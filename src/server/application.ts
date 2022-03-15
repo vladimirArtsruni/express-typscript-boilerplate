@@ -2,11 +2,8 @@ import { ExpressServer } from './drivers/express';
 import { KoaServer } from './drivers/koa';
 import Controllers from '../controllers';
 import { Environment } from '../config/Environment'
+import { dbCreateConnection } from '../typeorm/dbCreateConnection';
 
-/**
- * Wrapper around the Node process, ExpressServer abstraction and complex dependencies such as services that ExpressServer needs.
- * When not using Dependency Injection, can be used as place for wiring together services which are dependencies of ExpressServer.
- */
 export class Application {
     public static async createApplication() {
         let server;
@@ -18,6 +15,7 @@ export class Application {
             await server.setup(Controllers, Environment.getPort());
         }
         Application.handleExit(server);
+        await dbCreateConnection();
         return server;
     }
 
