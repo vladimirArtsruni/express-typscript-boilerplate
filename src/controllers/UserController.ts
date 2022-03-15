@@ -1,9 +1,13 @@
 import { Controller, Get } from 'routing-controllers';
-import services from '../services'
+import { UserService } from '../services/UserService'
 @Controller()
 export class UserController {
+    service: UserService;
+    constructor() {
+        this.service = new UserService();
+    }
     @Get('/users')
     getAll() {
-        return 1
+        return this.service.index()
     }
 }

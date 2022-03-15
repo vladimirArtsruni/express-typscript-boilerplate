@@ -44,11 +44,11 @@ export class Environment {
             schema: process.env.POSTGRES_SCHEMA,
             synchronize: false,
             logging: false,
-            entities: ['src/typeorm/entities/**/*.ts'],
-            migrations: ['src/typeorm/migrations/**/*.ts'],
+            entities: ['src/entities/**/*.ts'],
+            // migrations: ['src/migrations/**/*.ts'],
             cli: {
-                entitiesDir: 'src/typeorm/entities',
-                migrationsDir: 'src/typeorm/migrations',
+                entitiesDir: 'src/entities',
+                // migrationsDir: 'src/migrations',
             }
         }
     }

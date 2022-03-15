@@ -3,7 +3,7 @@ import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateCol
 
 import { Role } from './types';
 
-@Entity('users')
+@Entity('User')
 export class User {
     @PrimaryGeneratedColumn()
     id!: string;

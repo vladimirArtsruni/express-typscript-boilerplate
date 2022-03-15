@@ -1,12 +1,15 @@
-import { OrmService } from './OrmService';
-import { EntityTarget, Entity, getRepository, Repository } from "typeorm";
+import { getManager } from 'typeorm';
+import { UserRepository } from '../repositories/UserRepository';
 
-export class UserService extends  OrmService {
-     constructor(entity: EntityTarget<typeof Entity>) {
-           super(entity)
-     }
+export class UserService {
+    private userRepository: UserRepository;
 
-     async getAll(){
-         return this.repository.findAndCount();
-     }
+    constructor(){
+        this.userRepository = getManager().getCustomRepository(UserRepository);
+    }
+
+    async index() {
+        const users = await this.userRepository.find();
+        return users;
+    }
 }
