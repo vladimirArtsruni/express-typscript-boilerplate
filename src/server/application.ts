@@ -44,6 +44,7 @@ export class Application {
             console.info('Caught SIGTERM')
             Application.shutdownProperly(128 + 2, server)
         });
+        
         process.on('exit', () => {
             console.info('Exiting')
         });
