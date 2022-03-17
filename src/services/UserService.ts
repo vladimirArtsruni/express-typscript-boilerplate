@@ -2,14 +2,17 @@ import { getManager } from 'typeorm';
 import { UserRepository } from '../repositories/UserRepository';
 
 export class UserService {
-    private userRepository: UserRepository;
+    customClass: UserRepository;
 
-    constructor(){
-        this.userRepository = getManager().getCustomRepository(UserRepository);
+    constructor(userRepository: UserRepository){
+        this.customClass = userRepository;
     }
 
     async index() {
-        const users = await this.userRepository.find();
+        console.log(this.customClass);
+
+
+        const users = await  this.customClass.alo();
         return users;
     }
 }

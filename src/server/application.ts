@@ -1,25 +1,33 @@
-import { ExpressServer } from './drivers/express';
-import { KoaServer } from './drivers/koa';
-import Controllers from '../controllers';
-import { Environment } from '../config/Environment'
+import { ExpressServer } from './server';
+import { Controller } from 'routing-controllers';
+import { UserRepository } from '../repositories/UserRepository';
+import { UserService } from '../services/UserService';
+import { Environment } from '../config/Environment';
 import { dbCreateConnection } from '../typeorm/dbCreateConnection';
+import { UserController } from '../controllers/UserController';
+import {getCustomRepository} from "typeorm";
 
 export class Application {
+
     public static async createApplication() {
-        let server;
-        if (Environment.getServerDriver() === 'EXPRESS') {
-            server = new ExpressServer();
-            await server.setup(Controllers, Environment.getPort());
-        } else {
-            server = new KoaServer();
-            await server.setup(Controllers, Environment.getPort());
-        }
-        Application.handleExit(server);
         await dbCreateConnection();
+
+        const useRepository = getCustomRepository(UserRepository);
+        const userService = new UserService(useRepository);
+
+        const server = new ExpressServer([UserController], { userService });
+        await server.setup(Environment.getPort());
+        Application.handleExit(server);
+
+
         return server;
     }
 
-    private static handleExit(server: ExpressServer | KoaServer) {
+    /**
+     * @param server
+     * @private
+     */
+    private static handleExit(server: ExpressServer) {
         process.on('uncaughtException', (err: Error) => {
             console.error('Uncaught exception', err)
             Application.shutdownProperly(1, server)
@@ -41,7 +49,12 @@ export class Application {
         });
     }
 
-    private static shutdownProperly(exitCode: number, server: ExpressServer | KoaServer) {
+    /**
+     * @param exitCode
+     * @param server
+     * @private
+     */
+    private static shutdownProperly(exitCode: number, server: ExpressServer) {
         Promise.resolve()
             .then(() => server.kill())
             .then(() => {

@@ -1,13 +1,12 @@
-import { Controller, Get } from 'routing-controllers';
-import { UserService } from '../services/UserService'
-@Controller()
+import { JsonController, Get, Req } from 'routing-controllers';
+
+@JsonController()
 export class UserController {
-    service: UserService;
-    constructor() {
-        this.service = new UserService();
-    }
+
     @Get('/users')
-    getAll() {
-        return this.service.index()
+    @Req()
+    async getAll(@Req() request: any) {
+        const users = await request.services.userService.index();
+        return { a: users}
     }
 }
