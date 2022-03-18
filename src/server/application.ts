@@ -3,7 +3,7 @@ import { Controller } from 'routing-controllers';
 import { UserRepository } from '../repositories/UserRepository';
 import { UserService } from '../services/UserService';
 import { Environment } from '../config/Environment';
-import { dbCreateConnection } from '../typeorm/dbCreateConnection';
+import { dbCreateConnection } from '../db/dbCreateConnection';
 import { UserController } from '../controllers/UserController';
 import {getCustomRepository} from "typeorm";
 
