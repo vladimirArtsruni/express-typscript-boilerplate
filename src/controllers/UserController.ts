@@ -1,10 +1,9 @@
-import { JsonController, Get, Req } from 'routing-controllers';
+import { JsonController, Get, Req, Body } from 'routing-controllers';
 import { Request } from 'express';
-
-@JsonController()
+@JsonController('/users')
 export class UserController {
 
-    @Get('/users')
+    @Get('/')
     @Req()
     async getAll(@Req() request: Request) {
         const users = await request.services.userService.index();

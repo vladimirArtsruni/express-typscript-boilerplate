@@ -33,6 +33,10 @@ export class Environment {
         return process.env.SERVER_DRIVER || 'KOA'
     }
 
+    public static getAccessTokenSecret(): string {
+        return process.env.ACCESS_TOKEN_SECRET || 'ACCESS_TOKEN_SECRET'
+    }
+
     public static getOrmPostgreConfig(): ConnectionOptions {
         return {
             type: 'postgres',

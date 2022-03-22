@@ -2,10 +2,13 @@ import { ExpressServer } from './server';
 import { Controller } from 'routing-controllers';
 import { UserRepository } from '../repositories/UserRepository';
 import { UserService } from '../services/UserService';
+import { AuthService } from '../services/AuthService';
 import { Environment } from '../config/Environment';
 import { dbCreateConnection } from '../db/dbCreateConnection';
 import { UserController } from '../controllers/UserController';
-import {getCustomRepository} from "typeorm";
+import { AuthController } from '../controllers/AuthController';
+import { getCustomRepository } from "typeorm";
+import { Passport } from '../modules/passport';
 
 export class Application {
 
@@ -14,8 +17,9 @@ export class Application {
 
         const useRepository = getCustomRepository(UserRepository);
         const userService = new UserService(useRepository);
+        const authService = new AuthService(new Passport());
 
-        const server = new ExpressServer([UserController], { userService });
+        const server = new ExpressServer([ UserController, AuthController ], { userService, authService });
         await server.setup(Environment.getPort());
         Application.handleExit(server);
 
