@@ -7,7 +7,7 @@ export class AuthController {
 
     @Post('/login')
     async login(@Req() request: Request, @Body() body: LoginValidator) {
-        const users = await request.services.authService.login(request, body);
+        const users = await request.services.authService.login(request);
         return users
     }
 }

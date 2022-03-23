@@ -1,7 +1,7 @@
 import * as  bcrypt from 'bcryptjs';
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
-
 import { Role } from './types';
+import { Crypto } from '../../modules/crypto';
 
 @Entity('User')
 export class User {
@@ -15,6 +15,9 @@ export class User {
 
     @Column()
     password!: string;
+
+    @Column()
+    salt!: string;
 
     @Column({
         nullable: true,
@@ -37,11 +40,10 @@ export class User {
     updatedAt!: Date;
 
 
-    hashPassword() {
-        this.password = bcrypt.hashSync(this.password, 8);
-    }
-
-    checkIfPasswordMatch(unencryptedPassword: string) {
-        return bcrypt.compareSync(unencryptedPassword, this.password);
+    /**
+     * @param unencryptedPassword
+     */
+    async checkIfPasswordMatch(unencryptedPassword: string): Promise<boolean> {
+        return await Crypto.validatePassword(unencryptedPassword, this.salt, this.password)
     }
 }

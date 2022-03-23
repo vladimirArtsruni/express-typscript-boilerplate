@@ -36,6 +36,18 @@ export class Environment {
     public static getAccessTokenSecret(): string {
         return process.env.ACCESS_TOKEN_SECRET || 'ACCESS_TOKEN_SECRET'
     }
+    public static getAccessTokenLife(): string {
+        return process.env.ACCESS_TOKEN_LIFE || '3000m'
+    }
+
+    public static  cryptoConfig()  {
+       return {
+           hash: {
+               length: 128,
+               iterations: 10
+           }
+       }
+    };
 
     public static getOrmPostgreConfig(): ConnectionOptions {
         return {
@@ -50,10 +62,10 @@ export class Environment {
             logging: false,
             entities: ['src/entities/**/*.ts'],
             // migrations: ['src/migrations/**/*.ts'],
-            cli: {
-                entitiesDir: 'src/entities',
-                // migrationsDir: 'src/migrations',
-            }
+            // cli: {
+            //     entitiesDir: 'src/entities',
+            //     // migrationsDir: 'src/migrations',
+            // }
         }
     }
 }

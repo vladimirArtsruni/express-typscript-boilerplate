@@ -16,6 +16,7 @@ export class Application {
         await dbCreateConnection();
 
         const useRepository = getCustomRepository(UserRepository);
+
         const userService = new UserService(useRepository);
         const authService = new AuthService(new Passport());
 

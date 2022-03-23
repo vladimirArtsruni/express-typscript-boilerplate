@@ -7,6 +7,8 @@ import { useExpressServer } from 'routing-controllers';
 import { Controller } from 'routing-controllers';
 import { addServicesToRequest } from '../middlewares/ServiceDependenciesMiddleware';
 import { RequestServices } from '../types/CustomRequest'
+import * as passport from 'passport';
+import { ErrorHandler } from '../exception/ErrorHandler';
 
 export class ExpressServer {
 
@@ -43,8 +45,10 @@ export class ExpressServer {
      * @param server
      */
     setupStandardMiddlewares(server: Express): void {
+        server.use(passport.initialize());
         server.use(bodyParser.json());
         server.use(bodyParser.urlencoded({ extended: true }));
+        server.use(ErrorHandler.initialize);
     }
 
     public kill(): void {

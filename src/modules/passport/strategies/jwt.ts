@@ -1,5 +1,6 @@
 import { Environment } from '../../../config/Environment'
 import { Strategy, ExtractJwt } from "passport-jwt";
+import { Request } from 'express';
 
 
 export class JwtStrategy {
@@ -7,14 +8,15 @@ export class JwtStrategy {
         _passport.use(new Strategy(
             {
                 secretOrKey: Environment.getAccessTokenSecret(),
-                jwtFromRequest: ExtractJwt.fromAuthHeader(),
+                jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
                 passReqToCallback: true
             }, async (payload, done) => {
-                // const user = await DB.models.User.findByPk(payload.userId);
-                // if (!user) {
-                //     return done(null, false, {message: 'User is not found'});
-                // }
-                //
+                console.log(payload, 123)
+                //  const user = await request.services.userService.getById(payload.userId);
+                // // if (!user) {
+                // //     return done(null, false, {message: 'User is not found'});
+                // // }
+                // //
                 return done(null, {user: 1});
             }));
     }
