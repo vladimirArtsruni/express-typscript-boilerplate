@@ -1,22 +1,22 @@
 import * as jwt from 'jwt-simple';
 import * as passport from 'passport';
 import { Strategy, ExtractJwt } from "passport-jwt";
-import  JwtStrategy  from './strategies/jwt'
+import  { JwtStrategy}  from './strategies/jwt'
 import { User } from '../../entities/users/User'
 import { Environment } from '../../config/Environment'
 import * as moment from "moment";
 import { Request, Response } from 'express';
+import { Express } from 'express';
+
 
 export class Passport {
 
-    public initialize = () => {
-        passport.use('jwt', this.getStrategy());
-        return passport.initialize();
+    public initialize (express: Express): void {
+        express.use(passport.initialize());
+        this.mountStrategies();
     }
 
-    public test(){
-        console.info(444)
-    }
+
     /**
      * @param callback
      */
@@ -52,5 +52,7 @@ export class Passport {
     }
 
 
-    private getStrategy = (): Strategy => JwtStrategy
+    private mountStrategies (): void {
+        JwtStrategy.init(passport);
+    }
 }
