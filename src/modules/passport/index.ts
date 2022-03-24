@@ -5,11 +5,13 @@ import { JwtStrategy } from './strategies/jwt';
 import { LocalStragey } from './strategies/local';
 import { User } from '../../entities/users/User';
 import { Environment } from '../../config/Environment';
-import { Request, Response } from 'express';
-import { Express } from 'express';
-import { ErrorCode } from '../../exception/ErrorCode';
-import { ErrorMessages } from '../../exception/ErrorMessages';
-import { ErrorException } from '../../exception/ErrorException';
+import { Request, Response, Express, NextFunction } from 'express';
+import { ErrorCode } from '../../modules/exception/ErrorCode';
+import { ErrorMessages } from '../../modules/exception/ErrorMessages';
+import { Exception } from '../../modules/exception/Exception';
+
+
+
 
 export class Passport {
     private passport: passport.PassportStatic;
@@ -17,10 +19,12 @@ export class Passport {
     constructor() {
         this.passport = passport;
         this.passport.serializeUser((user: any, done: any) => {
+            console.log(user,111)
             done(null, user.id);
         });
 
         this.passport.deserializeUser(async (id: any, done: any) => {
+            console.log(11411)
 
             done(null, id);
         });
@@ -28,14 +32,27 @@ export class Passport {
         this.mountStrategies(this.passport);
     }
 
+    public static authenticate  (request: Request): Promise<any> {
+        return new Promise((resolve, reject) => {
+            passport.authenticate('jwt', async (error, user, info) => {
+              if (error) return reject(error);
+              if (!user) return reject(new Exception(ErrorCode.Unauthenticated, info));
+              request.user = user;
+
+              return resolve(user);
+            })(request);
+        });
+    }
+
+
     /**
      * @param request
      */
     public async login(request: Request) {
         return new Promise((resolve, reject) => {
             this.passport.authenticate('local', { session: false }, async (err, user: User | null, messages: { [key: string]: string }) => {
-                if (err) reject(new ErrorException(ErrorCode.UnknownError));
-                if (!user) reject(new ErrorException(ErrorCode.Unauthenticated, messages));
+                if (err) reject(new Exception(ErrorCode.UnknownError));
+                if (!user) reject(new Exception(ErrorCode.Unauthenticated, messages));
                 const token = this.generateToken(user!);
                 resolve(token);
             })(request);

@@ -1,7 +1,7 @@
 import { ErrorCode } from './ErrorCode';
 
-export class ErrorException extends Error {
-    public status: number|null;
+export class Exception extends Error {
+    public status: number;
     public metaData: any|null;
     constructor(code: string = ErrorCode.UnknownError, metaData: any = null) {
         super(code);

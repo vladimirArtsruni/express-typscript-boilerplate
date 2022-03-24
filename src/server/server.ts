@@ -4,11 +4,13 @@ import { Express } from 'express';
 import { Server } from 'http';
 import * as bodyParser from 'body-parser';
 import { useExpressServer } from 'routing-controllers';
-import { Controller } from 'routing-controllers';
+import { Controller, Action } from 'routing-controllers';
 import { addServicesToRequest } from '../middlewares/ServiceDependenciesMiddleware';
 import { RequestServices } from '../types/CustomRequest'
 import * as passport from 'passport';
-import { ErrorHandler } from '../exception/ErrorHandler';
+import { Passport } from '../modules/passport';
+import { ErrorHandlerMiddleware } from '../middlewares/ErrorHandlerMiddleware';
+import { authorizationChecker } from '../modules/decorators/AuthorizationChecker';
 
 export class ExpressServer {
 
@@ -48,7 +50,6 @@ export class ExpressServer {
         server.use(passport.initialize());
         server.use(bodyParser.json());
         server.use(bodyParser.urlencoded({ extended: true }));
-        server.use(ErrorHandler.initialize);
     }
 
     public kill(): void {
@@ -61,8 +62,11 @@ export class ExpressServer {
      */
     async configureApiEndpoints (server: Express): Promise<void> {
         useExpressServer(server, {
+            authorizationChecker: (action: Action) => Passport.authenticate(action.request),
             routePrefix: '/api',
-            controllers: [ ...this.controllers ]
+            controllers: [ ...this.controllers ],
+            middlewares: [ ErrorHandlerMiddleware ],
+            defaultErrorHandler: false,
         });
     }
 

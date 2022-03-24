@@ -1,4 +1,3 @@
-import { getManager } from 'typeorm';
 import { UserRepository } from '../repositories/UserRepository';
 import { User } from '../entities/users/User';
 

@@ -1,7 +1,7 @@
 import { Environment } from '../../../config/Environment'
 import { Strategy, ExtractJwt } from "passport-jwt";
 import { Request } from 'express';
-
+import { ErrorMessages } from '../../../modules/exception/ErrorMessages'
 
 export class JwtStrategy {
     public static init(_passport: any): void {
@@ -10,14 +10,10 @@ export class JwtStrategy {
                 secretOrKey: Environment.getAccessTokenSecret(),
                 jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
                 passReqToCallback: true
-            }, async (payload, done) => {
-                console.log(payload, 123)
-                //  const user = await request.services.userService.getById(payload.userId);
-                // // if (!user) {
-                // //     return done(null, false, {message: 'User is not found'});
-                // // }
-                // //
-                return done(null, {user: 1});
+            },async (request: Request, payload: any, done: any) => {
+                const user = await request.services.userService.getById(payload.data.id);
+                if (!user) return done(null, false, { message: ErrorMessages.UserNotFoud });
+                return done(null, user);
             }));
     }
 }

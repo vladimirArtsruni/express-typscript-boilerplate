@@ -1,4 +1,4 @@
-import { JsonController, Post, Req, Body } from 'routing-controllers';
+import { JsonController, Post, Req, Body, Authorized } from 'routing-controllers';
 import { Request } from 'express';
 import { LoginValidator } from '../validation/LoginValidator'
 

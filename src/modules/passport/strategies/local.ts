@@ -1,7 +1,7 @@
 import { Strategy } from 'passport-local';
 import { Request } from 'express';
 import { User } from '../../../entities/users/User'
-import { ErrorMessages } from '../../../exception/ErrorMessages';
+import { ErrorMessages } from '../../../modules/exception/ErrorMessages';
 
 export class LocalStragey {
     public static init(passport: any): void {

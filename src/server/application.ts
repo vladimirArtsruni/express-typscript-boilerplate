@@ -1,14 +1,24 @@
 import { ExpressServer } from './server';
 import { Controller } from 'routing-controllers';
-import { UserRepository } from '../repositories/UserRepository';
-import { UserService } from '../services/UserService';
-import { AuthService } from '../services/AuthService';
 import { Environment } from '../config/Environment';
 import { dbCreateConnection } from '../db/dbCreateConnection';
-import { UserController } from '../controllers/UserController';
-import { AuthController } from '../controllers/AuthController';
 import { getCustomRepository } from "typeorm";
 import { Passport } from '../modules/passport';
+
+/** SERVICES **/
+import { UserService } from '../services/UserService';
+import { TokenService } from '../services/TokenService';
+import { AuthService } from '../services/AuthService';
+
+/** CONTROLLERS **/
+import { UserController } from '../controllers/UserController';
+import { AuthController } from '../controllers/AuthController';
+
+
+/** REPOSITORIES **/
+import { UserRepository } from '../repositories/UserRepository';
+import { TokenRepository } from '../repositories/TokenRepository';
+
 
 export class Application {
 
@@ -16,11 +26,13 @@ export class Application {
         await dbCreateConnection();
 
         const useRepository = getCustomRepository(UserRepository);
+        const tokenRepository = getCustomRepository(TokenRepository);
 
+        const tokenService = new TokenService(tokenRepository);
         const userService = new UserService(useRepository);
         const authService = new AuthService(new Passport());
 
-        const server = new ExpressServer([ UserController, AuthController ], { userService, authService });
+        const server = new ExpressServer([ UserController, AuthController ], { userService, authService, tokenService });
         await server.setup(Environment.getPort());
         Application.handleExit(server);
 

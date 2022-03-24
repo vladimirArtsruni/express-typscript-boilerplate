@@ -1,10 +1,11 @@
-import { JsonController, Get, Req, Body } from 'routing-controllers';
+import { JsonController, Get, Req, Body, Authorized } from 'routing-controllers';
+import * as passport from 'passport';
 import { Request } from 'express';
 @JsonController('/users')
 export class UserController {
 
     @Get('/')
-    @Req()
+    @Authorized()
     async getAll(@Req() request: Request) {
         const users = await request.services.userService.index();
         return users
