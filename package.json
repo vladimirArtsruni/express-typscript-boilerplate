@@ -9,7 +9,9 @@
   },
   "scripts": {
     "dev": "nodemon src/index.ts",
-    "tsc": "tsc"
+    "tsc": "tsc",
+    "typeorm": "typeorm --config ./src/db/config.ts",
+    "migration:generate": "npm run typeorm migration:generate -n"
   },
   "dependencies": {
     "@types/passport-local": "^1.0.34",

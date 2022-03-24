@@ -50,6 +50,7 @@ export class Environment {
     };
 
     public static getOrmPostgreConfig(): ConnectionOptions {
+        console.log(999)
         return {
             type: 'postgres',
             host: process.env.POSTGRES_HOST,
@@ -61,11 +62,13 @@ export class Environment {
             synchronize: false,
             logging: false,
             entities: ['src/entities/**/*.ts'],
-            // migrations: ['src/migrations/**/*.ts'],
-            // cli: {
-            //     entitiesDir: 'src/entities',
-            //     // migrationsDir: 'src/migrations',
-            // }
+            // migrations: [
+            //     "src/db/migrations/**/*.ts"
+            // ],
+            cli: {
+                // entitiesDir: 'src/entities',
+                migrationsDir: path.join(__dirname, '../db/migrations'),
+            }
         }
     }
 }
