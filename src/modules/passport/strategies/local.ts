@@ -12,14 +12,14 @@ export class LocalStragey {
                     passReqToCallback: true,
                 },
                 async (request: Request, email: string, password: string, done) => {
-                    
-                    const user = await request.services.userService.getByEmail(email);
-                    if (!user) return done(null, false, { message: ErrorMessages.UserNotFoud });
+                    //
+                    // const user = await request.services.userService.getByEmail(email);
+                    // if (!user) return done(null, false, { message: ErrorMessages.UserNotFoud });
+                    //
+                    // const isValidPassword = await user.checkIfPasswordMatch(password);
+                    // if (!isValidPassword) return done(null, false, { message: ErrorMessages.InvalidCredentials });
 
-                    const isValidPassword = await user.checkIfPasswordMatch(password);
-                    if (!isValidPassword) return done(null, false, { message: ErrorMessages.InvalidCredentials });
-
-                    return done(null, user);
+                    return done(null, { email });
                 }
             )
         )

@@ -11,9 +11,9 @@ export class JwtStrategy {
                 jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
                 passReqToCallback: true
             },async (request: Request, payload: any, done: any) => {
-                const user = await request.services.userService.getById(payload.data.id);
-                if (!user) return done(null, false, { message: ErrorMessages.UserNotFoud });
-                return done(null, user);
+                // const user = await request.services.userService.getById(payload.data.id);
+                // if (!user) return done(null, false, { message: ErrorMessages.UserNotFoud });
+                return done(null, {a: 4});
             }));
     }
 }

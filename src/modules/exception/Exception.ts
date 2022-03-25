@@ -16,7 +16,7 @@ export class Exception extends Error {
             case ErrorCode.MaximumAllowedGrade:
                 this.status = 400;
                 break;
-            case ErrorCode.AsyncError:
+            case ErrorCode.BadRequestError:
                 this.status = 400;
                 break;
             case ErrorCode.NotFound:

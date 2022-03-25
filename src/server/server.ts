@@ -16,7 +16,7 @@ export class ExpressServer {
 
     private server?: Express;
     private httpServer?: Server;
-    constructor(private controllers: any[], private requestServices: RequestServices) {}
+    constructor(private controllers: any[]) {}
 
     /**
      * @param controllers
@@ -26,7 +26,6 @@ export class ExpressServer {
         const server = express();
 
         this.setupStandardMiddlewares(server);
-        this.setupServiceDependencies(server);
         this.configureApiEndpoints(server);
         this.httpServer = this.listen(server, port);
         this.server = server;
@@ -68,14 +67,5 @@ export class ExpressServer {
             middlewares: [ ErrorHandlerMiddleware ],
             defaultErrorHandler: false,
         });
-    }
-
-    /**
-     * @param server
-     * @private
-     */
-    private setupServiceDependencies(server: Express) {
-        const servicesMiddleware = addServicesToRequest(this.requestServices)
-        server.use(servicesMiddleware)
     }
 }

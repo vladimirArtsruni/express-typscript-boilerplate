@@ -1,15 +1,20 @@
 import { UserRepository } from '../repositories/UserRepository';
 import { User } from '../entities/users/User';
+import { Service } from 'typedi';
+import { InjectRepository, InjectManager } from 'typeorm-typedi-extensions';
+import { Repository,EntityManager  } from 'typeorm';
 
+@Service()
 export class UserService {
 
-    constructor(private userRepository: UserRepository){}
+    constructor(
+        @InjectRepository()
+        private readonly userRepository: UserRepository)
+    {}
 
     async index() {
-        const users = await this.userRepository.find();
-        return users;
+       return this.userRepository.find();
     }
-
 
     /**
      * @param email
