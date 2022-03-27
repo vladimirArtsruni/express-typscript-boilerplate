@@ -1,6 +1,6 @@
+import * as express from 'express';
 import { plainToClass } from 'class-transformer';
 import { validate, ValidationError } from 'class-validator';
-import * as express from 'express';
 import { Exception } from '../modules/exception/Exception';
 import { ErrorCode } from '../modules/exception/ErrorCode';
 

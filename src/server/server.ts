@@ -1,35 +1,35 @@
 import 'reflect-metadata';
 import * as express from 'express';
+import * as bodyParser from 'body-parser';
 import { Express } from 'express';
 import { Server } from 'http';
-import * as bodyParser from 'body-parser';
 import { useExpressServer } from 'routing-controllers';
 import { Controller, Action } from 'routing-controllers';
-import { addServicesToRequest } from '../middlewares/ServiceDependenciesMiddleware';
-import { RequestServices } from '../types/CustomRequest'
-import * as passport from 'passport';
-import { Passport } from '../modules/passport';
 import { ErrorHandlerMiddleware } from '../middlewares/ErrorHandlerMiddleware';
 import { authorizationChecker } from '../modules/decorators/AuthorizationChecker';
+import { currentUserChecker } from '../modules/decorators/CurrentUserChecker';
+
+/** CONTROLLERS **/
+import { UserController } from '../controllers/UserController';
+import { AuthController } from '../controllers/AuthController';
+
 
 export class ExpressServer {
 
     private server?: Express;
     private httpServer?: Server;
-    constructor(private controllers: any[]) {}
 
     /**
      * @param controllers
      * @param port
      */
     public async setup(port: number): Promise<Express> {
-        const server = express();
 
+        const server = express();
         this.setupStandardMiddlewares(server);
         this.configureApiEndpoints(server);
         this.httpServer = this.listen(server, port);
         this.server = server;
-
         return this.server;
     }
 
@@ -46,24 +46,26 @@ export class ExpressServer {
      * @param server
      */
     setupStandardMiddlewares(server: Express): void {
-        server.use(passport.initialize());
+
         server.use(bodyParser.json());
         server.use(bodyParser.urlencoded({ extended: true }));
     }
 
     public kill(): void {
+
         if (this.httpServer) this.httpServer.close();
     }
 
     /**
      * @param server
-     * @param controllers
      */
     async configureApiEndpoints (server: Express): Promise<void> {
+
         useExpressServer(server, {
-            authorizationChecker: (action: Action) => Passport.authenticate(action.request),
+            authorizationChecker: (action: Action, roles: string[]) => authorizationChecker(action, roles),
+            currentUserChecker: async (action: Action) => currentUserChecker(action),
             routePrefix: '/api',
-            controllers: [ ...this.controllers ],
+            controllers: [ AuthController, UserController ],
             middlewares: [ ErrorHandlerMiddleware ],
             defaultErrorHandler: false,
         });

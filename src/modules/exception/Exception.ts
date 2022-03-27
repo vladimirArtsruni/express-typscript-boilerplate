@@ -19,6 +19,9 @@ export class Exception extends Error {
             case ErrorCode.BadRequestError:
                 this.status = 400;
                 break;
+            case ErrorCode.AccessDenied:
+                this.status = 403;
+                break;
             case ErrorCode.NotFound:
                 this.status = 404;
                 break;

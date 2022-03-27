@@ -5,6 +5,10 @@ import { ConnectionOptions } from 'typeorm';
 envConfigs.config({ path: path.resolve(__dirname, '../../.env') });
 
 export class Environment {
+
+    public static readonly BcryptGenSaltRountds = 10;
+    public static readonly BearerTokenPrefix = 'Bearer';
+
     public static isLocal(): boolean {
         return Environment.getStage() === 'local'
     }

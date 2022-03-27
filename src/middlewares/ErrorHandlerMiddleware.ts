@@ -8,7 +8,6 @@ import { ErrorCode } from '../modules/exception/ErrorCode';
 export class ErrorHandlerMiddleware implements ExpressErrorMiddlewareInterface {
     error(error: any, request: Request, response: Response, next: (err: any) => any) {
 
-        console.log(error)
         if (error instanceof Exception) {
             response.status(error.status).send(error);
         }else if (error instanceof ValidationError) {

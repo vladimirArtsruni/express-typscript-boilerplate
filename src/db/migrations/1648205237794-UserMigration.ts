@@ -1,5 +1,5 @@
 import { MigrationInterface, QueryRunner, Table } from "typeorm";
-
+import { Roles } from '../../entities/users/types'
 export class UserMigration1648205237794 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<void> {
@@ -10,8 +10,8 @@ export class UserMigration1648205237794 implements MigrationInterface {
                     {
                         name: "id",
                         type: "uuid",
-                        isUnique: true,
-                        isPrimary: true
+                        isPrimary: true,
+                        default: 'uuid_generate_v4()'
                     },
                     {
                         name: "email",
@@ -24,18 +24,32 @@ export class UserMigration1648205237794 implements MigrationInterface {
                         isUnique: true,
                     },
                     {
+                        name: "isVerified",
+                        type: "boolean",
+                        default: false
+                    },
+                    {
+                        name: "role",
+                        type: "enum",
+                        enum: Object.values(Roles),
+                        enumName: 'userRole',
+                        default: `'${Roles.USER}'`
+                    },
+                    {
                         name: "password",
                         type: "varchar",
+                        isNullable: true
                     },
                     {
                         name: "salt",
                         type: "varchar",
+                        isNullable: true
                     },
                     {
                         name: "createdAt",
                         type: "timestamp",
                         default: "now()",
-                    },
+                    }
                 ],
             }),
             true,

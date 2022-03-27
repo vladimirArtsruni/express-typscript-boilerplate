@@ -1,18 +1,19 @@
-import { JsonController, Post, Req, Body, Authorized } from 'routing-controllers';
-import { Request } from 'express';
-import { LoginValidator } from '../validation/auth/LoginValidator'
-import { RegisterValidator } from '../validation/auth/RegisterValidator'
+import { JsonController, Post, Body, Authorized } from 'routing-controllers';
+import { LoginDto } from '../dto/auth/LoginDto';
+import { RegisterDto } from '../dto/auth/RegisterDto';
+import { AuthService } from '../services/AuthService';
 
 @JsonController('/auth')
 export class AuthController {
-
-    // @Post('/login')
-    // async login(@Req() request: Request, @Body() body: LoginValidator) {
-    //     return body
-    // }
+    constructor(private authService: AuthService) {}
 
     @Post('/register')
-    async login(@Req() request: Request, @Body() body: RegisterValidator) {
-        return body
+    async register(@Body() body: RegisterDto) {
+        return this.authService.register(body);
+    }
+
+    @Post('/login')
+    async login(@Body() body: LoginDto) {
+        return this.authService.login(body);
     }
 }

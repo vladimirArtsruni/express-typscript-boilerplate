@@ -12,7 +12,7 @@ export class UserService {
         private readonly userRepository: UserRepository)
     {}
 
-    async index() {
+    async getAll() {
        return this.userRepository.find();
     }
 

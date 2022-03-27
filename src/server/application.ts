@@ -1,16 +1,8 @@
 import { ExpressServer } from './server';
-import { Controller, useContainer } from 'routing-controllers';
+import { useContainer } from 'routing-controllers';
 import { Container } from 'typeorm-typedi-extensions';
 import { Environment } from '../config/Environment';
 import { dbCreateConnection } from '../db/dbCreateConnection';
-import { getCustomRepository } from "typeorm";
-import { Passport } from '../modules/passport';
-
-/** CONTROLLERS **/
-import { UserController } from '../controllers/UserController';
-import { AuthController } from '../controllers/AuthController';
-
-
 
 export class Application {
 
@@ -18,7 +10,7 @@ export class Application {
 
         useContainer(Container);
         await dbCreateConnection();
-        const server = new ExpressServer([ UserController, AuthController ]);
+        const server = new ExpressServer();
         await server.setup(Environment.getPort());
         Application.handleExit(server);
         return server;
