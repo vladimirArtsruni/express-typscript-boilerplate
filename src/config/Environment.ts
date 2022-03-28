@@ -40,8 +40,17 @@ export class Environment {
     public static getAccessTokenSecret(): string {
         return process.env.ACCESS_TOKEN_SECRET || 'ACCESS_TOKEN_SECRET'
     }
+
+    public static getRefreshTokenSecret(): string {
+        return process.env.REFRESH_TOKEN_SECRET || 'REFRESH_TOKEN_SECRET'
+    }
+
     public static getAccessTokenLife(): string {
         return process.env.ACCESS_TOKEN_LIFE || '3000m'
+    }
+
+    public static getRefreshTokenLife(): string {
+        return process.env.REFRESH_TOKEN_LIFE || '30d'
     }
 
     public static  cryptoConfig()  {
@@ -64,9 +73,9 @@ export class Environment {
             schema: process.env.POSTGRES_SCHEMA,
             synchronize: false,
             logging: false,
-            entities: ['src/entities/**/*.ts'],
+            entities: [ 'src/entities/**/*.ts' ],
             migrations: [
-                "src/db/migrations/**/*.ts"
+                'src/db/migrations/**/*.ts'
             ],
             cli: {
                 entitiesDir: 'src/entities/**/*.ts',

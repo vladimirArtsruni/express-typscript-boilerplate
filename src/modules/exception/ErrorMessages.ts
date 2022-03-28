@@ -1,5 +1,6 @@
 export class ErrorMessages {
     public static readonly UserNotFoud = 'UserNotFound';
+    public static readonly TokenNotFound = 'TokenNotFound';
     public static readonly InvalidCredentials = 'InvalidCredentials';
     public static readonly InvalidUser = 'InvalidUser';
     public static readonly AccessDenied = 'AccessDenied';

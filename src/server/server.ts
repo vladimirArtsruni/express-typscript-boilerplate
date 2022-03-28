@@ -1,73 +1,71 @@
-import 'reflect-metadata';
-import * as express from 'express';
-import * as bodyParser from 'body-parser';
-import { Express } from 'express';
-import { Server } from 'http';
-import { useExpressServer } from 'routing-controllers';
-import { Controller, Action } from 'routing-controllers';
-import { ErrorHandlerMiddleware } from '../middlewares/ErrorHandlerMiddleware';
-import { authorizationChecker } from '../modules/decorators/AuthorizationChecker';
-import { currentUserChecker } from '../modules/decorators/CurrentUserChecker';
+import "reflect-metadata";
+import * as express from "express";
+import * as bodyParser from "body-parser";
+import { Express } from "express";
+import { Server } from "http";
+import { useExpressServer } from "routing-controllers";
+import { Action } from "routing-controllers";
+import { ErrorHandlerMiddleware } from "../middlewares/ErrorHandlerMiddleware";
+import { authorizationChecker } from "../modules/decorators/AuthorizationChecker";
+import { currentUserChecker } from "../modules/decorators/CurrentUserChecker";
 
 /** CONTROLLERS **/
-import { UserController } from '../controllers/UserController';
-import { AuthController } from '../controllers/AuthController';
-
+import { UserController } from "../controllers/UserController";
+import { AuthController } from "../controllers/AuthController";
 
 export class ExpressServer {
 
-    private server?: Express;
-    private httpServer?: Server;
+  private server?: Express;
+  private httpServer?: Server;
 
-    /**
-     * @param controllers
-     * @param port
-     */
-    public async setup(port: number): Promise<Express> {
+  /**
+   * @param port
+   */
+  public async setup(port: number): Promise<Express> {
 
-        const server = express();
-        this.setupStandardMiddlewares(server);
-        this.configureApiEndpoints(server);
-        this.httpServer = this.listen(server, port);
-        this.server = server;
-        return this.server;
-    }
+    const server = express();
+    this.setupStandardMiddlewares(server);
+    this.configureApiEndpoints(server);
+    this.httpServer = this.listen(server, port);
+    this.server = server;
+    return this.server;
+  }
 
-    /**
-     * @param server
-     * @param port
-     */
-    public listen(server: Express, port: number) {
-        console.info(`Starting server on port ${port}`);
-        return server.listen(port);
-    }
+  /**
+   * @param server
+   * @param port
+   */
+  public listen(server: Express, port: number) {
+    console.info(`Starting server on port ${port}`);
+    return server.listen(port);
+  }
 
-    /**
-     * @param server
-     */
-    setupStandardMiddlewares(server: Express): void {
+  /**
+   * @param server
+   */
+  setupStandardMiddlewares(server: Express): void {
 
-        server.use(bodyParser.json());
-        server.use(bodyParser.urlencoded({ extended: true }));
-    }
+    server.use(bodyParser.json());
+    server.use(bodyParser.urlencoded({ extended: true }));
+  }
 
-    public kill(): void {
+  public kill(): void {
 
-        if (this.httpServer) this.httpServer.close();
-    }
+    if (this.httpServer) this.httpServer.close();
+  }
 
-    /**
-     * @param server
-     */
-    async configureApiEndpoints (server: Express): Promise<void> {
+  /**
+   * @param server
+   */
+  async configureApiEndpoints(server: Express): Promise<void> {
 
-        useExpressServer(server, {
-            authorizationChecker: (action: Action, roles: string[]) => authorizationChecker(action, roles),
-            currentUserChecker: async (action: Action) => currentUserChecker(action),
-            routePrefix: '/api',
-            controllers: [ AuthController, UserController ],
-            middlewares: [ ErrorHandlerMiddleware ],
-            defaultErrorHandler: false,
-        });
-    }
+    useExpressServer(server, {
+      authorizationChecker: (action: Action, roles: string[]) => authorizationChecker(action, roles),
+      currentUserChecker: async (action: Action) => currentUserChecker(action),
+      routePrefix: "/api",
+      controllers: [AuthController, UserController],
+      middlewares: [ErrorHandlerMiddleware],
+      defaultErrorHandler: false
+    });
+  }
 }

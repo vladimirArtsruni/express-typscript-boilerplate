@@ -1,33 +1,34 @@
-import { ErrorCode } from './ErrorCode';
+import { ErrorCode } from "./ErrorCode";
 
 export class Exception extends Error {
-    public status: number;
-    public metaData: any|null;
-    constructor(code: string = ErrorCode.UnknownError, metaData: any = null) {
-        super(code);
-        Object.setPrototypeOf(this, new.target.prototype);
-        this.name = code;
+  public status: number;
+  public metaData: any | null;
+
+  constructor(code: string = ErrorCode.UnknownError, metaData: any = null) {
+    super(code);
+    Object.setPrototypeOf(this, new.target.prototype);
+    this.name = code;
+    this.status = 500;
+    this.metaData = metaData;
+    switch (code) {
+      case ErrorCode.Unauthenticated:
+        this.status = 401;
+        break;
+      case ErrorCode.MaximumAllowedGrade:
+        this.status = 400;
+        break;
+      case ErrorCode.BadRequestError:
+        this.status = 400;
+        break;
+      case ErrorCode.AccessDenied:
+        this.status = 403;
+        break;
+      case ErrorCode.NotFound:
+        this.status = 404;
+        break;
+      default:
         this.status = 500;
-        this.metaData = metaData;
-        switch (code) {
-            case ErrorCode.Unauthenticated:
-                this.status = 401;
-                break;
-            case ErrorCode.MaximumAllowedGrade:
-                this.status = 400;
-                break;
-            case ErrorCode.BadRequestError:
-                this.status = 400;
-                break;
-            case ErrorCode.AccessDenied:
-                this.status = 403;
-                break;
-            case ErrorCode.NotFound:
-                this.status = 404;
-                break;
-            default:
-                this.status = 500;
-                break;
-        }
+        break;
     }
+  }
 }

@@ -1,9 +1,6 @@
-import { JsonController, Get, Req, Authorized, CurrentUser } from 'routing-controllers';
-import { Request } from 'express';
+import { JsonController, Get, Authorized } from 'routing-controllers';
 import { UserService } from '../services/UserService';
-import { Service, Inject } from 'typedi';
-import { User } from '../entities/users/User';
-import { Roles } from '../entities/users/types';
+import { Service } from 'typedi';
 
 @Service()
 @JsonController('/users')
@@ -13,7 +10,7 @@ export class UserController {
 
     @Get('/')
     @Authorized()
-    async getAll(@Req() request: Request) {
+    async getAll() {
        return this.userService.getAll();
     }
 }

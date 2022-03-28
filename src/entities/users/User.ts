@@ -1,8 +1,6 @@
-import * as  bcrypt from 'bcryptjs';
-import * as jwt from 'jsonwebtoken';
-import { Environment } from '../../config/Environment';
-import { Entity, PrimaryColumn, Column, CreateDateColumn,PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, CreateDateColumn,PrimaryGeneratedColumn } from 'typeorm';
 import { Roles } from './types';
+import { Helpers } from '../../modules/helpers';
 
 @Entity('users')
 export class User {
@@ -40,10 +38,7 @@ export class User {
      * @param password
      */
     public async checkPassword(password: string): Promise<boolean> {
-       return bcrypt.compareSync(password, this.password );
+       return Helpers.checkPassword(password, this.password);
     }
 
-    public generateToken() {
-       return jwt.sign({ data: { id: this.id } }, Environment.getAccessTokenSecret(), { expiresIn: Environment.getAccessTokenLife()});
-    }
 }

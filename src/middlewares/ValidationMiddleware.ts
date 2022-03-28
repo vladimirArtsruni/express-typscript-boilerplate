@@ -4,6 +4,7 @@ import { validate, ValidationError } from 'class-validator';
 import { Exception } from '../modules/exception/Exception';
 import { ErrorCode } from '../modules/exception/ErrorCode';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars,no-unused-vars
 function validationMiddleware<T>(type: any): express.RequestHandler {
     return (req, res, next) => {
         validate(plainToClass(type, req.body))

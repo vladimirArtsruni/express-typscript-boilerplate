@@ -1,7 +1,9 @@
-import { JsonController, Post, Body, Authorized } from 'routing-controllers';
+import { JsonController, Post, Body, Req } from 'routing-controllers';
 import { LoginDto } from '../dto/auth/LoginDto';
 import { RegisterDto } from '../dto/auth/RegisterDto';
+import { RefreshTokenDto } from '../dto/auth/RefreshTokenDto';
 import { AuthService } from '../services/AuthService';
+import { Request } from 'express';
 
 @JsonController('/auth')
 export class AuthController {
@@ -13,7 +15,12 @@ export class AuthController {
     }
 
     @Post('/login')
-    async login(@Body() body: LoginDto) {
-        return this.authService.login(body);
+    async login(@Req() req: Request, @Body() body: LoginDto) {
+        return this.authService.login(body, req.ip);
+    }
+
+    @Post('/refreshToken')
+    async refreshToken(@Req() req: Request, @Body() body: RefreshTokenDto) {
+        return this.authService.refreshToken(body.token, req.ip);
     }
 }

@@ -1,12 +1,9 @@
-import * as  bcrypt from 'bcryptjs';
-import * as jwt from 'jsonwebtoken';
-import {Environment} from '../../config/Environment';
 import {
-    Entity, PrimaryColumn, Column, CreateDateColumn,
+    Entity, Column, CreateDateColumn,
     PrimaryGeneratedColumn, OneToOne, JoinColumn,
 } from 'typeorm';
 
-import {Types} from './types';
+import { Types } from './types';
 import { User } from '../users/User';
 
 @Entity('tokens')
@@ -38,5 +35,4 @@ export class Token {
     @OneToOne(() => User)
     @JoinColumn()
     user!: User
-    
 }
