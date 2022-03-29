@@ -9,12 +9,21 @@ export class ErrorHandlerMiddleware implements ExpressErrorMiddlewareInterface {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars,no-unused-vars
     error(error: any, request: Request, response: Response, next: (err: any) => any) {
 
-        if (error instanceof Exception) {
-            response.status(error.status).send(error);
-        }else if (error instanceof ValidationError) {
-            response.status(402).send({ errors: error });
+        if ( Array.isArray(error.errors) && error.errors.every((element: any) => element instanceof ValidationError)){
+            let responseObject = [] as any;
+            error.errors.forEach((element: ValidationError) => {
+                responseObject.push({
+                    property: element.property,
+                    constraints: element.constraints
+                });
+            });
+            response.status(400).send(new Exception(ErrorCode.ValidationError, responseObject));
         }else {
-            response.status(500).send({ code: ErrorCode.UnknownError, errors: error });
+            if (error instanceof Exception) {
+                response.status(error.httpCode).send(error);
+            }else {
+                response.status(500).send({ code: ErrorCode.UnknownError, errors: error });
+            }
         }
     }
 }
