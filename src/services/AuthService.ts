@@ -1,5 +1,6 @@
 import { RegisterDto } from "../dto/auth/RegisterDto";
 import { LoginDto } from "../dto/auth/LoginDto";
+import { ForgotPassword } from "../dto/auth/ForgotPassword";
 import { Service } from "typedi";
 import { Exception } from "../modules/exception/Exception";
 import { ErrorCode } from "../modules/exception/ErrorCode";
@@ -11,6 +12,7 @@ import { TokenRepository } from "../repositories/TokenRepository";
 import { Types } from "../entities/tokens/types";
 
 import { Helpers } from "../modules/helpers";
+import { RessetPassword } from "../dto/auth/RessetPassword";
 
 @Service()
 export class AuthService {
@@ -18,8 +20,7 @@ export class AuthService {
   constructor(
     @InjectRepository() private readonly userRepository: UserRepository,
     @InjectRepository() private readonly tokenRepository: TokenRepository
-  ) {
-  }
+  ) {}
 
   /**
    * @param data
@@ -84,4 +85,53 @@ export class AuthService {
       return { accessToken, refreshToken };
     }, false);
   }
+
+
+  /**
+   * @param data
+   * @param ip
+   */
+  async forgotPassword(data: ForgotPassword, ip: string) {
+    const user = await this.userRepository.getByEmail(data.email);
+    if (!user) throw new Exception(ErrorCode.BadRequestError, { error: ErrorMessages.InvalidEmail });
+    const tokenStr = Helpers.generateToken({ email: user.email, type: Types.FORGOT_PASSWORD, ip });
+
+
+    let token = await this.tokenRepository.findOne({ userId: user.id, type: Types.FORGOT_PASSWORD });
+
+    if (token) {
+      await this.tokenRepository.update({ id: token.id }, { token: tokenStr, ip });
+    }else {
+      token =  await this.tokenRepository.save({ userId: user.id, type: Types.FORGOT_PASSWORD, token: tokenStr, ip });
+    }
+  }
+
+
+  /**
+   * @param data
+   * @param ip
+   */
+  async ressetPassword(data: RessetPassword, ip: string) {
+    if (data.password !== data.confirmPassword) throw new Exception(ErrorCode.BadRequestError, { error: ErrorMessages.PasswordNotMatched });
+
+    return Helpers.verifyJwt(data.token, async (err: any, decoded: any) => {
+      if (err) return new Exception(ErrorCode.BadRequestError, { message: ErrorMessages.InvalidToken });
+
+      if (!decoded.data.type || decoded.data.type !== Types.FORGOT_PASSWORD)
+        return new Exception(ErrorCode.BadRequestError, { message: ErrorMessages.InvalidToken });
+
+      const user = await this.userRepository.findOne({ email: decoded.data.email });
+      if (!user) throw new Exception(ErrorCode.BadRequestError, { error: ErrorMessages.UserNotFoud });
+
+      const token = await this.tokenRepository.findOne({ token: data.token, type: Types.FORGOT_PASSWORD, userId: user.id });
+      if (!token) throw new Exception(ErrorCode.BadRequestError, { error: ErrorMessages.TokenNotFound });
+
+      const hashedPasswordAndSalt = Helpers.getnerateHash(data.password);
+      await this.userRepository.update({ id: user.id }, hashedPasswordAndSalt );
+      await this.tokenRepository.delete(token.id);
+
+      return true;
+    });
+  }
+
 }

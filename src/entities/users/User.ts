@@ -1,4 +1,4 @@
-import { Entity, Column, CreateDateColumn,PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, CreateDateColumn,PrimaryGeneratedColumn, OneToOne, JoinColumn } from 'typeorm';
 import { Roles } from './types';
 import { Helpers } from '../../modules/helpers';
 
@@ -33,7 +33,7 @@ export class User {
     @Column()
     @CreateDateColumn()
     createdAt!: Date;
-
+    
     /**
      * @param password
      */

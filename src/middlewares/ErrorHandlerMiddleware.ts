@@ -8,13 +8,13 @@ import { ErrorCode } from '../modules/exception/ErrorCode';
 export class ErrorHandlerMiddleware implements ExpressErrorMiddlewareInterface {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars,no-unused-vars
     error(error: any, request: Request, response: Response, next: (err: any) => any) {
-
+        console.error(error)
         if ( Array.isArray(error.errors) && error.errors.every((element: any) => element instanceof ValidationError)){
             let responseObject = [] as any;
             error.errors.forEach((element: ValidationError) => {
                 responseObject.push({
+                    constraints: element.constraints,
                     property: element.property,
-                    constraints: element.constraints
                 });
             });
             response.status(400).send(new Exception(ErrorCode.ValidationError, responseObject));
@@ -25,5 +25,6 @@ export class ErrorHandlerMiddleware implements ExpressErrorMiddlewareInterface {
                 response.status(500).send({ code: ErrorCode.UnknownError, errors: error });
             }
         }
+
     }
 }
