@@ -6,6 +6,9 @@ import { InjectRepository } from "typeorm-typedi-extensions";
 @Service()
 export class UserService {
 
+  /**
+   * @param userRepository
+   */
   constructor(
     @InjectRepository()
     private readonly userRepository: UserRepository) {

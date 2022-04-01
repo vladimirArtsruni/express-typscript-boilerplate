@@ -3,11 +3,14 @@ import { useContainer } from 'routing-controllers';
 import { Container } from 'typeorm-typedi-extensions';
 import { Environment } from '../config/Environment';
 import { dbCreateConnection } from '../db/dbCreateConnection';
+import { initializeTransactionalContext, patchTypeORMRepositoryWithBaseRepository } from 'typeorm-transactional-cls-hooked';
 
 export class Application {
 
     public static async createApplication() {
 
+        initializeTransactionalContext(); // Initialize cls-hooked
+        patchTypeORMRepositoryWithBaseRepository(); // patch Repository with BaseRepository.
         useContainer(Container);
         await dbCreateConnection();
         const server = new ExpressServer();

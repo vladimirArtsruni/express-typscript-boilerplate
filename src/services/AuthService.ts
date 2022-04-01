@@ -15,10 +15,17 @@ import { Helpers } from "../modules/helpers";
 import { RessetPassword } from "../dto/auth/RessetPassword";
 
 import { Sendgrid } from '../modules/sendgrid';
+import { Transaction } from 'typeorm';
+
+import { Transactional } from 'typeorm-transactional-cls-hooked';
 
 @Service()
 export class AuthService {
 
+  /**
+   * @param userRepository
+   * @param tokenRepository
+   */
   constructor(
     @InjectRepository() private readonly userRepository: UserRepository,
     @InjectRepository() private readonly tokenRepository: TokenRepository
@@ -26,13 +33,16 @@ export class AuthService {
 
   /**
    * @param data
+   * @param ip
    */
+  @Transactional()
   async register(data: RegisterDto, ip: string): Promise<boolean> {
 
     const checkEmail = await this.userRepository.getByEmail(data.email);
     if (checkEmail) throw new Exception(ErrorCode.BadRequestError, { error: ErrorMessages.EmailAlreadyExist });
 
     const checkUsername = await this.userRepository.getByUsername(data.username);
+
     if (checkUsername)
       throw new Exception(ErrorCode.BadRequestError, { error: ErrorMessages.UsernameAlreadyExist });
 
@@ -53,6 +63,7 @@ export class AuthService {
    * @param data
    * @param ip
    */
+  @Transactional()
   async login(data: LoginDto, ip: string) {
 
     const user = await this.userRepository.getByEmail(data.email);
@@ -72,6 +83,7 @@ export class AuthService {
    * @param tokenStr
    * @param ip
    */
+  @Transactional()
   async refreshToken(tokenStr: string, ip: string) {
     return Helpers.verifyJwt(tokenStr, async (err: any, decoded: any) => {
       if (err) return new Exception(ErrorCode.BadRequestError, { message: ErrorMessages.InvalidToken });
@@ -100,11 +112,11 @@ export class AuthService {
    * @param data
    * @param ip
    */
-  async forgotPassword(data: ForgotPassword, ip: string) {
+  @Transactional()
+  async forgotPassword(data: ForgotPassword, ip: string): Promise<boolean> {
     const user = await this.userRepository.getByEmail(data.email);
     if (!user) throw new Exception(ErrorCode.BadRequestError, { error: ErrorMessages.InvalidEmail });
     const tokenStr = Helpers.generateToken({ email: user.email, type: Types.FORGOT_PASSWORD, ip }, Types.FORGOT_PASSWORD);
-
 
     let token = await this.tokenRepository.findOne({ userId: user.id, type: Types.FORGOT_PASSWORD });
 
@@ -113,6 +125,8 @@ export class AuthService {
     }else {
       token =  await this.tokenRepository.save({ userId: user.id, type: Types.FORGOT_PASSWORD, token: tokenStr, ip });
     }
+
+    return true;
   }
 
 
@@ -120,6 +134,7 @@ export class AuthService {
    * @param data
    * @param ip
    */
+  @Transactional()
   async ressetPassword(data: RessetPassword, ip: string) {
     if (data.password !== data.confirmPassword) throw new Exception(ErrorCode.BadRequestError, { error: ErrorMessages.PasswordNotMatched });
 
@@ -142,5 +157,4 @@ export class AuthService {
       return true;
     });
   }
-
 }

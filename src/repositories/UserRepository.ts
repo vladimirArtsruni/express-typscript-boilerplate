@@ -1,6 +1,7 @@
-import { EntityRepository, Repository } from "typeorm";
+import { EntityRepository, Transaction, TransactionManager, EntityManager } from "typeorm";
 import { User } from "../entities/users/User";
 import { Service } from "typedi";
+import { Repository } from './BaseRepository';
 
 @Service()
 @EntityRepository(User)
@@ -18,5 +19,10 @@ export class UserRepository extends Repository<User> {
    */
   async getByUsername(username: string) {
     return this.findOne({ where: { username } });
+  }
+
+  @Transaction()
+  saveT(@TransactionManager() manager: EntityManager, user: User) {
+    return manager.save(user);
   }
 }
