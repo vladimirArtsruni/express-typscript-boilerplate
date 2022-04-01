@@ -11,7 +11,7 @@ export class Application {
         useContainer(Container);
         await dbCreateConnection();
         const server = new ExpressServer();
-        await server.setup(Environment.getPort());
+        await server.setup(Environment.Port as number);
         Application.handleExit(server);
         return server;
     }

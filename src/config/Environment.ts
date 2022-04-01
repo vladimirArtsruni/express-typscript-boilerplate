@@ -6,60 +6,22 @@ envConfigs.config({ path: path.resolve(__dirname, '../../.env') });
 
 export class Environment {
 
+    public static readonly Port = process.env.PORT || 8002 ;
+
     public static readonly BcryptGenSaltRountds = 10;
+
     public static readonly BearerTokenPrefix = 'Bearer';
+    public static readonly TokenSecret = process.env.TOKEN_SECRET || 'TOKEN_SECRET';
+    public static readonly AccessTokenLife = process.env.ACCESS_TOKEN_LIFE || '3000m';
+    public static readonly VerifyTokenLife = process.env.VERIFY_TOKEN_LIFE || '30d';
+    public static readonly RefreshTokenLife = process.env.REFRESH_TOKEN_LIFE || '30d';
+    public static readonly ForgotPasswordTokenLife = process.env.FORGOT_PASSWORD_TOKEN_LIFE || '30d';
 
-    public static isLocal(): boolean {
-        return Environment.getStage() === 'local'
-    }
-
-    public static isStaging(): boolean {
-        return Environment.getStage() === 'staging'
-    }
-
-    public static isProd(): boolean {
-        return Environment.getStage() === 'prod'
-    }
-
-    public static getStage(): string {
-        return process.env.STAGE || 'local'
-    }
-
-    public static getPort(): number {
-        return (process.env.PORT as any) || 8002
-    }
-
-    public static getVerticalName() {
-        return process.env.VERTICAL_NAME || 'cats'
-    }
-
-    public static getServerDriver(): string {
-        return process.env.SERVER_DRIVER || 'KOA'
-    }
-
-    public static getAccessTokenSecret(): string {
-        return process.env.ACCESS_TOKEN_SECRET || 'ACCESS_TOKEN_SECRET'
-    }
-
-    public static getRefreshTokenSecret(): string {
-        return process.env.REFRESH_TOKEN_SECRET || 'REFRESH_TOKEN_SECRET'
-    }
-
-    public static getAccessTokenLife(): string {
-        return process.env.ACCESS_TOKEN_LIFE || '3000m'
-    }
-
-    public static getRefreshTokenLife(): string {
-        return process.env.REFRESH_TOKEN_LIFE || '30d'
-    }
-
-    public static  cryptoConfig()  {
-       return {
-           hash: {
-               length: 128,
-               iterations: 10
-           }
-       }
+    public static gerMailerConfig() {
+        return {
+            apiKey: process.env.SENDGRID_API_KEY!,
+            sender: process.env.SENDGRID_SENDER_EMAIL || 'dev+1@brainstormtech.io'
+        }
     };
 
     public static getOrmPostgreConfig(): ConnectionOptions {

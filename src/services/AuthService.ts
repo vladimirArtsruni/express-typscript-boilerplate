@@ -14,6 +14,8 @@ import { Types } from "../entities/tokens/types";
 import { Helpers } from "../modules/helpers";
 import { RessetPassword } from "../dto/auth/RessetPassword";
 
+import { Sendgrid } from '../modules/sendgrid';
+
 @Service()
 export class AuthService {
 
@@ -25,7 +27,7 @@ export class AuthService {
   /**
    * @param data
    */
-  async register(data: RegisterDto) {
+  async register(data: RegisterDto, ip: string): Promise<boolean> {
 
     const checkEmail = await this.userRepository.getByEmail(data.email);
     if (checkEmail) throw new Exception(ErrorCode.BadRequestError, { error: ErrorMessages.EmailAlreadyExist });
@@ -37,7 +39,14 @@ export class AuthService {
     const hashedPasswordAndSalt = Helpers.getnerateHash(data.password);
     data.password = hashedPasswordAndSalt.password;
 
-    return this.userRepository.save({ ...data, salt: hashedPasswordAndSalt.salt });
+    const user = await this.userRepository.save({ ...data, salt: hashedPasswordAndSalt.salt });
+    const verifyToken = Helpers.generateToken({ id: user.id }, Types.ACCOUNT_VERIFY);
+
+    const token = await this.tokenRepository.save({ userId: user.id, token: verifyToken, ip, type: Types.ACCOUNT_VERIFY });
+
+    await Sendgrid.userVerification(user.email, token.token);
+
+    return true
   }
 
   /**
@@ -52,8 +61,8 @@ export class AuthService {
     const check = await user.checkPassword(data.password);
     if (!check) throw new Exception(ErrorCode.BadRequestError, { error: ErrorMessages.InvalidCredentials });
 
-    const accessToken = Helpers.generateToken({ id: user.id });
-    const refreshToken = Helpers.generateToken({ id: user.id }, false);
+    const accessToken = Helpers.generateToken({ id: user.id }, Types.ACCESS);
+    const refreshToken = Helpers.generateToken({ id: user.id }, Types.REFRESH);
     await this.tokenRepository.delete({ userId: user.id, type: Types.REFRESH });
     await this.tokenRepository.save({ userId: user.id, token: refreshToken, ip, type: Types.REFRESH });
     return { accessToken, refreshToken };
@@ -77,13 +86,13 @@ export class AuthService {
       const user = await this.userRepository.findOne(decoded.data.id);
       if (!user) return new Exception(ErrorCode.NotFound, { message: ErrorMessages.UserNotFoud });
 
-      const accessToken = Helpers.generateToken({ id: user.id });
-      const refreshToken = Helpers.generateToken({ id: user.id }, false);
+      const accessToken = Helpers.generateToken({ id: user.id }, Types.ACCESS);
+      const refreshToken = Helpers.generateToken({ id: user.id }, Types.REFRESH);
 
       await this.tokenRepository.update({ id: token.id }, { token: refreshToken, ip });
 
       return { accessToken, refreshToken };
-    }, false);
+    });
   }
 
 
@@ -94,7 +103,7 @@ export class AuthService {
   async forgotPassword(data: ForgotPassword, ip: string) {
     const user = await this.userRepository.getByEmail(data.email);
     if (!user) throw new Exception(ErrorCode.BadRequestError, { error: ErrorMessages.InvalidEmail });
-    const tokenStr = Helpers.generateToken({ email: user.email, type: Types.FORGOT_PASSWORD, ip });
+    const tokenStr = Helpers.generateToken({ email: user.email, type: Types.FORGOT_PASSWORD, ip }, Types.FORGOT_PASSWORD);
 
 
     let token = await this.tokenRepository.findOne({ userId: user.id, type: Types.FORGOT_PASSWORD });

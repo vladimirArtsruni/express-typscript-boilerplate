@@ -12,8 +12,8 @@ export class AuthController {
     constructor(private authService: AuthService) {}
 
     @Post('/register')
-    async register(@Body() body: RegisterDto) {
-        return this.authService.register(body);
+    async register(@Req() req: Request, @Body() body: RegisterDto) {
+        return this.authService.register(body, req.ip);
     }
 
     @Post('/login')
