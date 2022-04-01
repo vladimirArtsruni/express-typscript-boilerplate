@@ -9,8 +9,8 @@ export class Application {
 
     public static async createApplication() {
 
-        initializeTransactionalContext(); // Initialize cls-hooked
-        patchTypeORMRepositoryWithBaseRepository(); // patch Repository with BaseRepository.
+        initializeTransactionalContext();
+        patchTypeORMRepositoryWithBaseRepository(); 
         useContainer(Container);
         await dbCreateConnection();
         const server = new ExpressServer();
