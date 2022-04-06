@@ -8,6 +8,7 @@ import { Action } from "routing-controllers";
 import { ErrorHandlerMiddleware } from "../middlewares/ErrorHandlerMiddleware";
 import { authorizationChecker } from "../modules/decorators/AuthorizationChecker";
 import { currentUserChecker } from "../modules/decorators/CurrentUserChecker";
+import * as cors from 'cors';
 
 /** CONTROLLERS **/
 import { UserController } from "../controllers/UserController";
@@ -46,6 +47,7 @@ export class ExpressServer {
   setupStandardMiddlewares(server: Express): void {
 
     server.use(bodyParser.json());
+    server.use(cors());
     server.use(bodyParser.urlencoded({ extended: true }));
   }
 

@@ -1,4 +1,4 @@
-import { JsonController, Post, Body, Req } from 'routing-controllers';
+import { JsonController, Post, Body, Req, Get, Authorized } from 'routing-controllers';
 import { LoginDto } from '../dto/auth/LoginDto';
 import { RegisterDto } from '../dto/auth/RegisterDto';
 import { RefreshTokenDto } from '../dto/auth/RefreshTokenDto';
@@ -35,5 +35,12 @@ export class AuthController {
     @Post('/ressetPassword')
     async ressetPassword(@Req() req: Request, @Body() body: RessetPassword) {
         return this.authService.ressetPassword(body, req.ip);
+    }
+
+    @Get('/user')
+    @Authorized()
+    async authUser(@Req() req: Request) {
+        // @ts-ignore
+        return req.user;
     }
 }
