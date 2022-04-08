@@ -34,7 +34,7 @@ export class Environment {
             database: process.env.POSTGRES_DB,
             schema: process.env.POSTGRES_SCHEMA,
             synchronize: false,
-            logging: false,
+            logging: true,
             entities: [ 'src/entities/**/*.ts' ],
             migrations: [
                 'src/db/migrations/**/*.ts'

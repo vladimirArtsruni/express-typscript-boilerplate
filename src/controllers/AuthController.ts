@@ -40,7 +40,18 @@ export class AuthController {
     @Get('/user')
     @Authorized()
     async authUser(@Req() req: Request) {
-        // @ts-ignore
         return req.user;
+    }
+
+    @Post('/logout')
+    @Authorized()
+    async logout(@Req() req: Request) {
+        return this.authService.logout(req.user.id);
+    }
+
+    @Get('/interlocutors')
+    @Authorized()
+    async getConversations(@Req() req: Request) {
+        return this.authService.getInterlocutors(req.user.id!);
     }
 }

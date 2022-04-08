@@ -29,6 +29,11 @@ export class UserMigration1648205237794 implements MigrationInterface {
                         default: false
                     },
                     {
+                        name: "avatar",
+                        type: "varchar",
+                        isNullable: true
+                    },
+                    {
                         name: "role",
                         type: "enum",
                         enum: Object.values(Roles),

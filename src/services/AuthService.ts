@@ -1,3 +1,5 @@
+import { faker } from '@faker-js/faker';
+
 import { RegisterDto } from "../dto/auth/RegisterDto";
 import { LoginDto } from "../dto/auth/LoginDto";
 import { ForgotPassword } from "../dto/auth/ForgotPassword";
@@ -9,6 +11,7 @@ import { ErrorMessages } from "../modules/exception/ErrorMessages";
 import { InjectRepository } from "typeorm-typedi-extensions";
 import { UserRepository } from "../repositories/UserRepository";
 import { TokenRepository } from "../repositories/TokenRepository";
+import { ConversationRepository } from "../repositories/ConversationRepository";
 import { Types } from "../entities/tokens/types";
 
 import { Helpers } from "../modules/helpers";
@@ -18,6 +21,7 @@ import { Sendgrid } from '../modules/sendgrid';
 import { Transaction } from 'typeorm';
 
 import { Transactional } from 'typeorm-transactional-cls-hooked';
+import { UserResource } from '../resources/UserResource';
 
 @Service()
 export class AuthService {
@@ -28,7 +32,8 @@ export class AuthService {
    */
   constructor(
     @InjectRepository() private readonly userRepository: UserRepository,
-    @InjectRepository() private readonly tokenRepository: TokenRepository
+    @InjectRepository() private readonly tokenRepository: TokenRepository,
+    @InjectRepository() private readonly conversationRepository: ConversationRepository
   ) {}
 
   /**
@@ -49,10 +54,15 @@ export class AuthService {
     const hashedPasswordAndSalt = Helpers.getnerateHash(data.password);
     data.password = hashedPasswordAndSalt.password;
 
-    const user = await this.userRepository.save({ ...data, salt: hashedPasswordAndSalt.salt });
+    const user = await this.userRepository.save({ ...data, salt: hashedPasswordAndSalt.salt, avatar: faker.image.avatar() });
     const verifyToken = Helpers.generateToken({ id: user.id }, Types.ACCOUNT_VERIFY);
 
-    const token = await this.tokenRepository.save({ userId: user.id, token: verifyToken, ip, type: Types.ACCOUNT_VERIFY });
+    const token = await this.tokenRepository.save({
+      userId: user.id,
+      token: verifyToken,
+      ip,
+      type: Types.ACCOUNT_VERIFY
+    });
 
     await Sendgrid.userVerification(user.email, token.token);
 
@@ -156,5 +166,28 @@ export class AuthService {
 
       return true;
     });
+  }
+
+  /**
+   * @param userId
+   */
+  async logout(userId: string) {
+    await this.tokenRepository.delete({ userId: userId, type: Types.REFRESH });
+    return true;
+  }
+
+  /**
+   * @param userId
+   */
+  async getInterlocutors(userId: string) {
+    const user = await this.userRepository.findOne( userId,{
+      relations: ['conversations', 'conversations.users']
+    });
+
+    const result = user!.conversations.map((conversation)=> {
+      return UserResource.conversation(conversation, userId)
+    })
+
+    return  { data: result };
   }
 }

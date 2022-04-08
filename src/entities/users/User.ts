@@ -1,6 +1,7 @@
-import { Entity, Column, CreateDateColumn,PrimaryGeneratedColumn, OneToOne, JoinColumn } from 'typeorm';
+import { Entity, Column, CreateDateColumn,PrimaryGeneratedColumn, OneToOne, JoinColumn, ManyToMany, JoinTable } from 'typeorm';
 import { Roles } from './types';
 import { Helpers } from '../../modules/helpers';
+import { Conversation } from '../conversation/Conversation';
 
 @Entity('users')
 export class User {
@@ -21,6 +22,9 @@ export class User {
     salt!: string;
 
     @Column()
+    avatar?: string;
+
+    @Column()
     isVerified!: boolean;
 
     @Column({
@@ -33,7 +37,22 @@ export class User {
     @Column()
     @CreateDateColumn()
     createdAt!: Date;
-    
+
+
+    @ManyToMany(() => Conversation)
+    @JoinTable({
+        name: 'conversationUsers',
+        joinColumn: {
+            name: "userId",
+            referencedColumnName: "id"
+        },
+        inverseJoinColumn: {
+            name: "conversationId",
+            referencedColumnName: "id"
+        }
+    })
+    conversations!: Conversation[] 
+
     /**
      * @param password
      */

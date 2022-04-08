@@ -29,7 +29,13 @@ export const authorizationChecker = async (action: Action, roles: string[]): Pro
             if (roles && roles.length && !roles.includes(user.role))
                 return reject(new Exception(ErrorCode.AccessDenied, { message: ErrorMessages.AccessDenied }));
 
-            action.request.user = user;
+            action.request.user = {
+                id: user.id,
+                avatar: user.avatar,
+                username: user.username,
+                email: user.email,
+                role: user.role,
+            };
             resolve(true);
         });
     });

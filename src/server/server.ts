@@ -13,6 +13,7 @@ import * as cors from 'cors';
 /** CONTROLLERS **/
 import { UserController } from "../controllers/UserController";
 import { AuthController } from "../controllers/AuthController";
+import { ConversationController } from "../controllers/ConversationController";
 
 export class ExpressServer {
 
@@ -65,7 +66,7 @@ export class ExpressServer {
       authorizationChecker: (action: Action, roles: string[]) => authorizationChecker(action, roles),
       currentUserChecker: async (action: Action) => currentUserChecker(action),
       routePrefix: "/api",
-      controllers: [AuthController, UserController],
+      controllers: [AuthController, UserController, ConversationController],
       middlewares: [ErrorHandlerMiddleware],
       defaultErrorHandler: false
     });
