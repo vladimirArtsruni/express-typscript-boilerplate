@@ -27,7 +27,7 @@ export class ConversationUsersMigration1649404088200 implements MigrationInterfa
                         default: "now()",
                     },
                     {
-                        name: "updateddAt",
+                        name: "updatedAt",
                         type: "timestamp",
                         default: "now()",
                     }

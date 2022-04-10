@@ -1,9 +1,10 @@
-import {UserRepository} from "../repositories/UserRepository";
-import {User} from "../entities/users/User";
-import {Service} from "typedi";
-import {InjectRepository} from "typeorm-typedi-extensions";
-import {Like} from "typeorm";
-import { UserResource } from '../resources/UserResource'
+import { UserRepository } from "../repositories/UserRepository";
+import { User } from "../entities/users/User";
+import { Service } from "typedi";
+import { InjectRepository } from "typeorm-typedi-extensions";
+import { Like, Not  } from "typeorm";
+import { UserResource } from '../resources/UserResource';
+
 
 @Service()
 export class UserService {
@@ -16,18 +17,25 @@ export class UserService {
         private readonly userRepository: UserRepository) {
     }
 
-    async search(key: string) {
+    async search(key: string, authId: string) {
 
-        let result = await this.userRepository.find({
+
+        return  this.userRepository.getInterlocators(authId, key)
+
+        const result = await this.userRepository.find({
             username: Like(`%${key}%`),
+            id: Not(authId)
         });
 
-        // @ts-ignore
-        result = result.map((user) => {
+        const rsource = result.map((user) => {
             return UserResource.user(user)
         })
 
-        return  { data: result };
+        return  { data: rsource  };
+    }
+
+    async searchInInterlocutors(key: string, usrId: string) {
+
     }
 
     /**

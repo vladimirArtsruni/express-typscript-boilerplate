@@ -1,4 +1,4 @@
-import { Entity, Column, CreateDateColumn,PrimaryGeneratedColumn, UpdateDateColumn, OneToOne } from 'typeorm';
+import { Entity, Column, CreateDateColumn,PrimaryGeneratedColumn, UpdateDateColumn, OneToOne, JoinColumn } from 'typeorm';
 import { User } from '../users/User';
 
 @Entity('messages')
@@ -31,5 +31,6 @@ export class Message {
     updatedAt!: Date;
 
     @OneToOne(() => User)
+    @JoinColumn()
     user!: User;
 }

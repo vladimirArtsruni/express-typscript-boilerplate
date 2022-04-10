@@ -42,7 +42,7 @@ export class MessageMigration1649404335166 implements MigrationInterface {
                         default: "now()",
                     },
                     {
-                        name: "updateddAt",
+                        name: "updatedAt",
                         type: "timestamp",
                         default: "now()",
                     }

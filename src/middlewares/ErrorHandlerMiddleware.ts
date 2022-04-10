@@ -21,6 +21,7 @@ export class ErrorHandlerMiddleware implements ExpressErrorMiddlewareInterface {
             if (error instanceof Exception) {
                 response.status(error.httpCode).send(error);
             }else {
+                console.error(error,'error')
                 response.status(500).send({ code: ErrorCode.UnknownError, errors: error });
             }
         }

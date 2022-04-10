@@ -1,6 +1,7 @@
-import { JsonController, Get, Authorized, QueryParam } from 'routing-controllers';
+import { JsonController, Get, Authorized, QueryParam, Req } from 'routing-controllers';
 import { UserService } from '../services/UserService';
 import { Service } from 'typedi';
+import { Request } from 'express';
 
 @Service()
 @JsonController('/users')
@@ -10,8 +11,8 @@ export class UserController {
 
     @Get('/search')
     @Authorized()
-    async search(@QueryParam("key") serchKey: string ) {
-        return this.userService.search(serchKey);
+    async search(@QueryParam("key") serchKey: string, @Req() req: Request ) {
+        return this.userService.search(serchKey, req.user.id);
     }
 }
 

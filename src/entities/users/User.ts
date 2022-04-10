@@ -22,7 +22,7 @@ export class User {
     salt!: string;
 
     @Column()
-    avatar?: string;
+    avatar!: string;
 
     @Column()
     isVerified!: boolean;

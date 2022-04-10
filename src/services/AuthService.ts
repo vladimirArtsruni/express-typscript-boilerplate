@@ -64,7 +64,7 @@ export class AuthService {
       type: Types.ACCOUNT_VERIFY
     });
 
-    await Sendgrid.userVerification(user.email, token.token);
+    //await Sendgrid.userVerification(user.email, token.token);
 
     return true
   }
@@ -179,15 +179,13 @@ export class AuthService {
   /**
    * @param userId
    */
-  async getInterlocutors(userId: string) {
-    const user = await this.userRepository.findOne( userId,{
-      relations: ['conversations', 'conversations.users']
-    });
+  async getInterlocutors(userId: string, searchKey: string | null = null) {
+    const result = await this.userRepository.getInterlocators(userId, searchKey);
 
-    const result = user!.conversations.map((conversation)=> {
-      return UserResource.conversation(conversation, userId)
+    const interlocators = result.map((interlocator)=> {
+      return UserResource.interlocator(interlocator);
     })
 
-    return  { data: result };
+    return  { data: interlocators };
   }
 }

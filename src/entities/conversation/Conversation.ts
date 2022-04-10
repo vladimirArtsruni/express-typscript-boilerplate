@@ -14,7 +14,7 @@ export class Conversation {
 
     @Column()
     @UpdateDateColumn()
-    updateddAt!: Date;
+    updatedAt!: Date;
 
 
 
