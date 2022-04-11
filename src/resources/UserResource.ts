@@ -1,17 +1,17 @@
-import {Conversation} from '../entities/conversation/Conversation';
-import {User} from '../entities/users/User';
+import { Conversation } from '../entities/conversation/Conversation';
+import { User } from '../entities/users/User';
 
 interface IConversation {
-    id: string,
-    lastActivity: Date,
+    id: string;
+    lastActivity: Date;
 }
 
 export interface IUserResource {
-    id: string,
-    email: string,
-    username: string,
-    avatar: string,
-    conversation?: IConversation
+    id: string;
+    email: string;
+    username: string;
+    avatar: string;
+    conversation?: IConversation;
 }
 
 export class UserResource {
@@ -29,7 +29,6 @@ export class UserResource {
         }
     }
 
-
     public static user(user: User): IUserResource {
         return {
             id: user.id,
@@ -43,7 +42,7 @@ export class UserResource {
 
         const user = conversation.users.filter((user) => {
             return user.id !== authId;
-        })[0];
+        })[ 0 ];
 
         return {
             id: user.id,

@@ -1,6 +1,5 @@
-import { EntityRepository, ObjectLiteral } from "typeorm";
-import { Token } from "../entities/tokens/Token";
-import { Service } from "typedi";
+import { ObjectLiteral } from 'typeorm';
+import { Service } from 'typedi';
 import { BaseRepository } from 'typeorm-transactional-cls-hooked';
 
 @Service()

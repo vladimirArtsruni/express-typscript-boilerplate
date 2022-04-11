@@ -1,8 +1,8 @@
-import {EntityRepository, EntityManager, getRepository, Like, Brackets} from "typeorm";
-import {User} from "../entities/users/User";
-import {Service} from "typedi";
-import {Repository} from './BaseRepository';
-import {UserResource} from '../resources/UserResource';
+import { EntityRepository, Brackets } from 'typeorm';
+import { User } from '../entities/users/User';
+import { Service } from 'typedi';
+import { Repository } from './BaseRepository';
+import { UserResource } from '../resources/UserResource';
 
 @Service()
 @EntityRepository(User)
@@ -12,43 +12,43 @@ export class UserRepository extends Repository<User> {
      * @param email
      */
     async getByEmail(email: string) {
-        return this.findOne({where: {email}});
+        return this.findOne({ where: { email } });
     }
 
     /**
      * @param username
      */
     async getByUsername(username: string) {
-        return this.findOne({where: {username}});
+        return this.findOne({ where: { username } });
     }
 
     /**
-     * @param authId
+     * @param userId
      * @param key
      */
-    async getInterlocators(userId: string, key: string | null = null) {
-        const result = await this.createQueryBuilder("user")
+    async getInterlocutors(userId: string, key: string | null = null) {
+        const result = await this.createQueryBuilder('user')
             .innerJoin(
                 'user.conversations',
-                'conversation',
+                'conversation'
             )
             .leftJoin('conversation.users', 'interlocators')
             .select([
-                "conversation.id as conversationId",
-                "conversation.updatedAt as lastActivity",
-                "interlocators.id AS id",
-                "interlocators.email AS email",
-                "interlocators.username AS username",
-                "interlocators.avatar as avatar",
+                'conversation.id as conversationId',
+                'conversation.updatedAt as lastActivity',
+                'interlocators.id AS id',
+                'interlocators.email AS email',
+                'interlocators.username AS username',
+                'interlocators.avatar as avatar'
             ])
-            .where("user.id = :id", {
+            .where('user.id = :id', {
                 id: userId
             })
-            .andWhere(`interlocators.id != :id`, {
+            .andWhere('interlocators.id != :id', {
                 id: userId
             })
             .andWhere(new Brackets(qb => {
-                if (key) return qb.where("interlocators.username like :key", {key: `%${key}%`});
+                if (key) return qb.where('interlocators.username like :key', { key: `%${key}%` });
             }))
             .getRawMany();
 
@@ -64,14 +64,14 @@ export class UserRepository extends Repository<User> {
      */
     async search(userId: string, key: string, ids: string[]) {
 
-        const result = await this.createQueryBuilder("user")
-            .where("user.id != :id", {
+        const result = await this.createQueryBuilder('user')
+            .where('user.id != :id', {
                 id: userId
             })
-            .where("user.username like :key", {
+            .where('user.username like :key', {
                 key: `%${key}%`
             })
-            .andWhere("user.id NOT IN (:...ids)", {
+            .andWhere('user.id NOT IN (:...ids)', {
                 ids
             })
             .getMany();

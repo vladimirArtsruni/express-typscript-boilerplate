@@ -21,7 +21,7 @@ export class Application {
 
         const socket =  TypediContainer.get(SocketIo);
 
-        socket.setUp(server.httpServer);
+        socket.init(server.httpServer);
 
         Application.handleExit(server);
         return server;

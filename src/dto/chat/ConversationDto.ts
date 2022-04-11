@@ -1,4 +1,4 @@
-import { IsEmail, IsString, IsUUID, ValidateNested } from 'class-validator';
+import { IsUUID, ValidateNested } from 'class-validator';
 import { MessageDto } from './MessageDto';
 
 export class ConversationDto {

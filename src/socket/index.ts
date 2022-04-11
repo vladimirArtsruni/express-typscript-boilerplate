@@ -1,25 +1,28 @@
-import * as socketio from "socket.io";
-import { Server, Socket } from "socket.io";
-import { Server as HttpServer } from "http";
-import {Service} from "typedi";
+import { Server, Socket } from 'socket.io';
+import { Server as HttpServer } from 'http';
+import { Service } from 'typedi';
 import { ConversationService } from '../services/ConversationService'
 import { UserService } from '../services/UserService'
 import { Helpers } from '../modules/helpers';
+import { MessageHandler } from './handlers/messageHandler';
+import { ProfileHandler } from './handlers/profileHandler';
 
 @Service()
 export class SocketIo {
-
-    private io: any;
 
     constructor(
         public conversationService: ConversationService,
         public userService: UserService
     ) {}
 
-    public setUp(httpServer: HttpServer) {
+    /**
+     * @param httpServer
+     */
+    public init(httpServer: HttpServer) {
         const io = new Server(httpServer, {
-            cors: { origin: "*" }
+            cors: { origin: '*' }
         });
+
         io.use((socket, next) => {
             const token = socket.handshake.auth.token;
             Helpers.verifyJwt(token,async (err: any, decoded: any)=> {
@@ -31,31 +34,22 @@ export class SocketIo {
                 next();
             })
         });
+
        this.initHandlers(io);
-       this.io = io;
     }
 
+    /**
+     * @param io
+     * @private
+     */
     private initHandlers(io: any) {
-        const _this = this;
-        io.on("connection", (socket: Socket) => {
-            socket.on('NEW_MESSAGE', (arg) => this.newMessageHandlers.call(_this, arg, socket.data.user.id))
-            socket.on('GET_INTERLOCUTORS', () => this.getInterlocutors.call(_this, socket))
+        const profileHandlers = new  ProfileHandler(this.userService);
+        const messageHandlers = new  MessageHandler(this.conversationService);
+
+        io.on('connection', async (socket: Socket) => {
+            profileHandlers.setupConnection(io, socket).init();
+            messageHandlers.setupConnection(io, socket).init();
         });
     }
-
-    private async newMessageHandlers(arg: any, userId: string) {
-        console.log(arg, 'newMessage')
-        if (arg.conversationId) {
-            const message = await this.conversationService.createMessage(arg.conversationId, userId, arg.message);
-        }
-    }
-
-    private async getInterlocutors(socket: Socket) {
-        const userId = socket.data.user.id;
-        console.log(userId,'userId')
-        const interlocutors = await this.userService.getInterlocutors(userId);
-        socket.emit('GET_INTERLOCUTORS_RESULT', interlocutors)
-    }
 }
-
 
