@@ -18,7 +18,7 @@ import { ConversationController } from "../controllers/ConversationController";
 export class ExpressServer {
 
   private server?: Express;
-  private httpServer?: Server;
+  public httpServer!: Server;
 
   /**
    * @param port

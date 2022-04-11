@@ -1,4 +1,4 @@
-import { JsonController, Get, Authorized, Param, Req, Post, Body } from 'routing-controllers';
+import { JsonController, Get, Authorized, Param, Req, Post, Body, QueryParam } from 'routing-controllers';
 import { ConversationService } from '../services/ConversationService';
 import { ConversationDto } from '../dto/chat/ConversationDto'
 import { MessageDto } from '../dto/chat/MessageDto'
@@ -30,10 +30,23 @@ export class ConversationController {
         return this.conversationService.getMessages(conversationId, req.user.id);
     }
 
-    @Get('/:id/messages')
+    @Post('/:id/messages')
     @Authorized()
     async createMessage(@Param("id") conversationId: string, @Req() req: Request, @Body() body: MessageDto) {
         return this.conversationService.createMessage(conversationId, req.user.id, body);
+    }
+
+
+    @Get('/interlocutors')
+    @Authorized()
+    async getInterlocators(@Req() req: Request) {
+        return this.conversationService.getInterlocators(req.user.id);
+    }
+
+    @Get('/interlocutors/search')
+    @Authorized()
+    async searchInterlocutors(@Req() req: Request,@QueryParam("key") serchKey: string) {
+        return this.conversationService.searchInterlocutors(req.user.id, serchKey);
     }
 }
 

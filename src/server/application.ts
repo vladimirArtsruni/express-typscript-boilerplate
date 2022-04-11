@@ -1,9 +1,12 @@
 import { ExpressServer } from './server';
 import { useContainer } from 'routing-controllers';
 import { Container } from 'typeorm-typedi-extensions';
+import { Container as TypediContainer } from 'typedi';
+
 import { Environment } from '../config/Environment';
 import { dbCreateConnection } from '../db/dbCreateConnection';
 import { initializeTransactionalContext, patchTypeORMRepositoryWithBaseRepository } from 'typeorm-transactional-cls-hooked';
+import { SocketIo } from '../socket';
 
 export class Application {
 
@@ -15,6 +18,11 @@ export class Application {
         await dbCreateConnection();
         const server = new ExpressServer();
         await server.setup(Environment.Port as number);
+
+        const socket =  TypediContainer.get(SocketIo);
+
+        socket.setUp(server.httpServer);
+
         Application.handleExit(server);
         return server;
     }

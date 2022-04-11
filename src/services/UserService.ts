@@ -19,9 +19,6 @@ export class UserService {
 
     async search(key: string, authId: string) {
 
-
-        return  this.userRepository.getInterlocators(authId, key)
-
         const result = await this.userRepository.find({
             username: Like(`%${key}%`),
             id: Not(authId)
@@ -32,10 +29,6 @@ export class UserService {
         })
 
         return  { data: rsource  };
-    }
-
-    async searchInInterlocutors(key: string, usrId: string) {
-
     }
 
     /**
@@ -50,5 +43,14 @@ export class UserService {
      */
     async getById(id: string): Promise<User | undefined> {
         return this.userRepository.findOne({where: {id}});
+    }
+
+
+    /**
+     * @param userId
+     * @param searchKey
+     */
+    async getInterlocutors(userId: string, searchKey: string | null = null) {
+        return this.userRepository.getInterlocators(userId, searchKey);
     }
 }

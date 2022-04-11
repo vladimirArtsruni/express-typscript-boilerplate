@@ -180,12 +180,7 @@ export class AuthService {
    * @param userId
    */
   async getInterlocutors(userId: string, searchKey: string | null = null) {
-    const result = await this.userRepository.getInterlocators(userId, searchKey);
-
-    const interlocators = result.map((interlocator)=> {
-      return UserResource.interlocator(interlocator);
-    })
-
+    const interlocators = await this.userRepository.getInterlocators(userId, searchKey);
     return  { data: interlocators };
   }
 }
