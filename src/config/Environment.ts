@@ -24,7 +24,7 @@ export class Environment {
         }
     };
 
-    public static getOrmPostgreConfig(): ConnectionOptions {
+    public static getOrmPostgresConfig(): ConnectionOptions {
         return {
             type: 'postgres',
             host: process.env.POSTGRES_HOST,
@@ -34,7 +34,7 @@ export class Environment {
             database: process.env.POSTGRES_DB,
             schema: process.env.POSTGRES_SCHEMA,
             synchronize: false,
-            logging: true,
+            logging: false,
             entities: [ 'src/entities/**/*.ts' ],
             migrations: [
                 'src/db/migrations/**/*.ts'

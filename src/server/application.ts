@@ -1,10 +1,11 @@
 import { ExpressServer } from './server';
 import { useContainer } from 'routing-controllers';
 import { Container } from 'typeorm-typedi-extensions';
-import { Container as TypediContainer } from 'typedi';
+import { Container as TypeDiContainer } from 'typedi';
 
 import { Environment } from '../config/Environment';
 import { dbCreateConnection } from '../db/dbCreateConnection';
+import { Redis } from '../redis';
 import { initializeTransactionalContext, patchTypeORMRepositoryWithBaseRepository } from 'typeorm-transactional-cls-hooked';
 import { SocketIo } from '../socket';
 
@@ -16,12 +17,14 @@ export class Application {
         patchTypeORMRepositoryWithBaseRepository(); 
         useContainer(Container);
         await dbCreateConnection();
+        const redis = new Redis();
+        await redis.init();
         const server = new ExpressServer();
         await server.setup(Environment.Port as number);
 
-        const socket =  TypediContainer.get(SocketIo);
+        const socket =  TypeDiContainer.get(SocketIo);
 
-        socket.init(server.httpServer);
+        socket.init(server.httpServer, redis);
 
         Application.handleExit(server);
         return server;
