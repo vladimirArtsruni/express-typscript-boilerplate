@@ -77,6 +77,22 @@ export class SocketIo {
             socket.on('disconnect', async () => {
                 await this.redis!.delete(userId as string);
                 socket.broadcast.emit('USER_OFFLINE', { userId });
+            });
+
+
+            socket.on('ACCEPTED', async(args) => {
+                console.info(args,78)
+                socket.to(args.to).emit('ACCEPTED', args.sdp)
+
+            })
+
+            socket.on('OFFER',  async (args) => {
+              const id = args.to;
+              const socketId = await redis.get(id);
+
+                if (socketId) {
+                  socket.to(socketId).emit('OFFER', args)
+              }
 
             });
         });

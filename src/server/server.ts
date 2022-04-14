@@ -48,7 +48,7 @@ export class ExpressServer {
   setupStandardMiddlewares(server: Express): void {
 
     server.use(bodyParser.json());
-    server.use(cors());
+    server.use(cors({origin: '*'}));
     server.use(bodyParser.urlencoded({ extended: true }));
   }
 
